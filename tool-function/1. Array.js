@@ -104,3 +104,94 @@ const dropFilter = (arr, func) => {
 
 dropFilter([1, 2, 3, 4], (n) => n >= 3); // [3,4]
 dropWhile([1, 2, 3, 4], (n) => n >= 3); // [3,4]
+
+// 16. `flatten`：指定深度扁平化数组
+const flatten = (arr, depth = 1) =>
+    arr.reduce(
+        (a, v) =>
+            a.concat(depth > 1 && Array.isArray(v) ? flatten(v, depth - 1) : v),
+        []
+    );
+flatten([1, [2], 3, 4]); // [1, 2, 3, 4]
+flatten([1, [2, [3, [4, 5], 6], 7], 8], 2); // [1, 2, 3, [4, 5], 6, 7, 8]
+
+// 17. `indexOfAll`：返回数组中某值的所有索引
+const indexOfAll = (arr, val) =>
+    arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
+indexOfAll([1, 2, 3, 1, 2, 3], 1); // [0,3]
+indexOfAll([1, 2, 3], 4); // []
+
+// 18. `intersection`：两数组的交集
+const intersection = (a, b) => {
+    const s = new Set(b);
+    return a.filter((x) => s.has(x));
+};
+intersection([1, 2, 3], [4, 3, 2]); // [2, 3]
+
+// 19. `intersectionWith`：两数组都符合条件的交集
+const intersectionBy = (a, b, fn) => {
+    const s = new Set(b.map(fn));
+    return a.filter((x) => s.has(fn(x)));
+};
+
+intersectionBy([2.1, 1.2], [2.3, 3.4], Math.floor); // [2.1]
+
+// 20. `intersectionWith`：先比较后返回交集
+const intersectionWith = (a, b, comp) =>
+    a.filter((x) => b.findIndex((y) => comp(x, y)) !== -1);
+intersectionWith(
+    [1, 1.2, 1.5, 3, 0],
+    [1.9, 3, 0, 3.9],
+    (a, b) => Math.round(a) === Math.round(b)
+); // [1.5, 3, 0]
+
+// 21. `minN`：返回指定长度的升序数组
+const minN = (arr, n = 1) => [...arr].sort((a, b) => a - b).slice(0, n);
+minN([1, 2, 3]); // [1]
+minN([1, 2, 3], 2); // [1,2]
+
+// 22. `negate`：根据条件反向筛选
+const negate =
+    (func) =>
+    (...args) =>
+        !func(...args)[(1, 2, 3, 4, 5, 6)].filter(negate((n) => n % 2 === 0)); // [ 1, 3, 5 ]
+
+// 23. `randomIntArrayInRange`：生成两数之间指定长度的随机数组
+const randomIntArrayInRange = (min, max, n = 1) =>
+    Array.from(
+        { length: n },
+        () => Math.floor(Math.random * (max - min + 1)) + min
+    );
+randomIntArrayInRange(12, 35, 10); // [ 34, 14, 27, 17, 30, 27, 20, 26, 21, 14 ]
+
+// 24. `sample`：在指定数组中获取随机数
+const sample = (arr) => arr[Math.floor(Math.random() * arr.length)];
+sample([3, 7, 9, 11]); // 9
+
+// 25. `sampleSize`：在指定数组中获取指定长度的随机数 26. `shuffle`：“洗牌” 数组
+const sampleSize = (arr, n = 1) => {
+    let m = arr.length;
+    while (m) {
+        const i = Math.floor(Math.random() * m--);
+        [arr[m], arr[i]] = [arr[i], arr[m]];
+    }
+    return arr.slice(0, n);
+};
+sampleSize([1, 2, 3], 2); // [3,1]
+sampleSize([1, 2, 3], 4); // [2,3,1]
+
+// 27. `nest`：根据`parent_id`生成树结构（阿里一面真题）
+const nest = (items, id = null, link = 'parent_id') =>
+    items
+        .filter((item) => item[link] === id)
+        .map((item) => ({ ...item, children: nest(items, item.id) }));
+const comments = [
+    { id: 1, parent_id: null },
+    { id: 2, parent_id: 1 },
+    { id: 3, parent_id: 1 },
+    { id: 4, parent_id: 2 },
+    { id: 5, parent_id: 4 },
+];
+const nestedComments = nest(comments);
+
+// https://mp.weixin.qq.com/s/iVzxWV8N-a5aYy_T2cR5rA
